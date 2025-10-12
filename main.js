@@ -1,18 +1,22 @@
 import { getProduct, addProduct, removeProduct } from "./consultas.js";
 
-const   [...args] = process.argv.slice(2),
-        method = args[0],
-        resource = args[1],
-        title = args[2],
-        price = args[3],
-        category = args[4];
+const   [,,method, resource, ...params] = process.argv;
 
-switch (method) {
+let methodUppercase = method.toUpperCase();
+
+if (resource != 'products')
+{
+    let [resourceClean] = resource.split('/');
+    console.log(`Para poder realizar una peticion la palabra clave es 'products' y no ${resourceClean}`);
+    process.exit(1);
+}
+
+switch (methodUppercase) {
     case 'GET':
         getProduct(resource);
         break;
     case 'POST':
-        addProduct(resource,title,price,category);
+        addProduct(resource,params);
         break;
 
     case 'DELETE':
