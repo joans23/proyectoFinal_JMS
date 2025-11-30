@@ -19,6 +19,37 @@
 </script>
 </head>
 <body class="bg-gray-100 min-h-screen">
+  <!-- MODAL EDITAR PRODUCTO -->
+<div id="editModal"
+    class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+
+  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+    <h2 class="text-2xl font-bold mb-4 text-center">✏️ Editar Producto</h2>
+
+    <input type="hidden" id="edit-id" />
+
+    <div class="grid grid-cols-1 gap-4 mb-4">
+      <input id="edit-nombre" class="border p-3 rounded" placeholder="Nombre" />
+      <input id="edit-categoria" class="border p-3 rounded" placeholder="Categoría" />
+      <input id="edit-descripcion" class="border p-3 rounded" placeholder="Descripción" />
+      <input id="edit-precio" class="border p-3 rounded" placeholder="Precio" type="number" />
+      <input id="edit-stock" class="border p-3 rounded" placeholder="Stock" type="number" />
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closeEditModal()"
+        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+        Cancelar
+      </button>
+
+      <button onclick="saveProductChanges()"
+        class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-700">
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+
+</div>
     <nav class="bg-primary text-white p-4 shadow-md">
         <h1 class="text-xl font-bold">Panel de Administración</h1>
     </nav>
@@ -113,6 +144,50 @@ async function login() {
 
   }
 }
+function openEditModal(id) {
+  const product = window.cachedProducts.find(p => p.id === id);
+
+  document.getElementById("edit-id").value = id;
+  document.getElementById("edit-nombre").value = product.nombre;
+  document.getElementById("edit-categoria").value = product.categoria;
+  document.getElementById("edit-descripcion").value = product.descripcion;
+  document.getElementById("edit-precio").value = product.precio;
+  document.getElementById("edit-stock").value = product.stock;
+
+  document.getElementById("editModal").classList.remove("hidden");
+}
+
+function closeEditModal() {
+  document.getElementById("editModal").classList.add("hidden");
+}
+
+async function saveProductChanges() {
+  const id = document.getElementById("edit-id").value;
+
+  const updatedFields = {
+    nombre: document.getElementById("edit-nombre").value,
+    categoria: document.getElementById("edit-categoria").value,
+    descripcion: document.getElementById("edit-descripcion").value,
+    precio: Number(document.getElementById("edit-precio").value),
+    stock: Number(document.getElementById("edit-stock").value)
+  };
+
+  const res = await fetch(`${API}/api/products/${id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: TOKEN,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(updatedFields)
+  });
+
+  const data = await res.json();
+  alert(data.message ?? "Producto actualizado");
+
+  closeEditModal();
+  loadProducts();
+}
+
 
 // ---------------------------
 // LISTAR PRODUCTOS
@@ -129,25 +204,34 @@ async function loadProducts() {
 
   products.forEach((p) => {
     container.innerHTML += `
-      <div class="border p-4 rounded shadow-sm flex justify-between items-center">
-        <div>
-          <p class="font-bold">${p.nombre}</p>
-          <p class="text-gray-600">$${p.precio}</p>
-          <p class="text-gray-600">${p.descripcion}</p>
-          <p class="text-gray-600">Categoria: ${p.categoria}</p>
-          <p class="text-gray-600">Stock ${p.stock}</p>
-        </div>
-
-        ${
-          USER_ROLE === "admin"
-            ? `<button onclick="deleteProduct('${p.id}')"
-                class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
-                Eliminar
-               </button>`
-            : ""
-        }
+    <div class="border p-4 rounded shadow-sm flex justify-between items-center">
+      <div>
+        <p class="font-bold">${p.nombre}</p>
+        <p class="text-gray-600">$${p.precio}</p>
+        <p class="text-gray-600">${p.descripcion}</p>
+        <p class="text-gray-600">Categoria: ${p.categoria}</p>
+        <p class="text-gray-600">Stock ${p.stock}</p>
       </div>
-    `;
+
+      ${
+        USER_ROLE === "admin"
+          ? `
+          <div class="flex gap-2">
+            <button onclick="openEditModal('${p.id}')"
+                class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-600">
+                Editar
+            </button>
+
+            <button onclick="deleteProduct('${p.id}')"
+              class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+              Eliminar
+            </button>
+          </div>
+          `
+          : ""
+      }
+    </div>
+  `;
   });
 }
 
@@ -165,6 +249,14 @@ function validateProductForm(){
     }
   }
   return true;
+}
+
+function clearProductForm() {
+  document.getElementById("nombre").value = "";
+  document.getElementById("categoria").value = "";
+  document.getElementById("descripcion").value = "";
+  document.getElementById("precio").value = "";
+  document.getElementById("stock").value = "";
 }
 
 async function createProduct() {
@@ -186,7 +278,7 @@ async function createProduct() {
 
   const data = await res.json();
   alert(data.message ?? "Producto creado");
-
+  clearProductForm(); 
   loadProducts();
 }
 
@@ -211,19 +303,30 @@ window.onload = () => {
   const savedToken = localStorage.getItem("token");
   const savedRole = localStorage.getItem("role");
 
-  if (savedToken) {
-    TOKEN = savedToken;
-    USER_ROLE = savedRole;
-
-    // Ocultar modal
-    document.getElementById("loginModal").classList.add("hidden");
-
-    if (USER_ROLE === "admin") {
-      document.getElementById("adminSection").classList.remove("hidden");
-    }
-
-    loadProducts(); // cargar productos automáticamente
+  // Si hay sesión guardada pero expiró → cerrar sesión
+  if (!checkSession()) {
+    localStorage.clear();
+    document.getElementById("loginModal").classList.remove("hidden");
+    return;
   }
+
+  // Si no hay token → mostrar modal
+  if (!savedToken) {
+    document.getElementById("loginModal").classList.remove("hidden");
+    return;
+  }
+
+  // Si hay token y está vigente
+  TOKEN = savedToken;
+  USER_ROLE = savedRole;
+
+  document.getElementById("loginModal").classList.add("hidden");
+
+  if (USER_ROLE === "admin") {
+    document.getElementById("adminSection").classList.remove("hidden");
+  }
+
+  loadProducts();
 };
 localStorage.setItem("loginTime", Date.now());
 localStorage.setItem("sessionDuration", 30 * 60 * 1000); // 30 min
@@ -244,19 +347,6 @@ function checkSession() {
   return true;
 }
 
-window.onload = () => {
-  if (checkSession()) {
-    TOKEN = localStorage.getItem("token");
-    USER_ROLE = localStorage.getItem("role");
-    document.getElementById("loginModal").classList.add("hidden");
-
-    if (USER_ROLE === "admin") {
-      document.getElementById("adminSection").classList.remove("hidden");
-    }
-
-    loadProducts();
-  }
-};
 </script>
 </body>
 </html>
