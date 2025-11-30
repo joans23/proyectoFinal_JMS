@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "main": "./api/index.js",
   "scripts": {
-    "build":"echo 'no build needed'",
+    "build": "echo 'no build needed'",
     "start": "node ./api/index.js",
     "createUserDemo": "node ./scripts/createUser.js"
   },
@@ -15,8 +15,7 @@
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
     "firebase": "^11.10.0",
-    "jsonwebtoken": "^9.0.2",
-    "serverless-http": "^4.0.0"
+    "jsonwebtoken": "^9.0.2"
   },
   "keywords": [],
   "author": "",

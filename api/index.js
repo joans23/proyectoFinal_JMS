@@ -1,5 +1,4 @@
 import express from "express";
-import serverless from "serverless-http";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
@@ -26,5 +25,6 @@ app.use((err,req, res, next)=>{
     res.status(err.status || 500).json({ message: err.message});
 });
 
-export const handler = serverless(app);
-export default handler;
+export default function handler(req, res){
+    return app(req, res);
+}
