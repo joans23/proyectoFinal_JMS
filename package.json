@@ -4,6 +4,7 @@
   "version": "1.0.1",
   "main": "./api/index.js",
   "scripts": {
+    "build":"echo 'no build needed'",
     "start": "node ./api/index.js",
     "createUserDemo": "node ./scripts/createUser.js"
   },
