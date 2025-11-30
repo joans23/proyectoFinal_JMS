@@ -23,14 +23,17 @@
 <body class="bg-gray-100 min-h-screen">
   <nav class="bg-primary text-white p-4 shadow-md flex justify-between items-center">
     <h1 class="text-xl font-bold">Panel de Administración</h1>
-    <button onclick="logout()" id="logoutBtn"
-      class="bg-white text-primary font-semibold px-4 py-1 rounded hover:bg-gray-200 transition">
-      Cerrar sesión
-    </button>
-    <button id="btnCreateUser" onclick="openUserModal()"
-      class="hidden bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mb-4">
-      ➕ Crear Usuario
-    </button>
+    <div class="wrapper-actions">
+      <button onclick="logout()" id="logoutBtn"
+        class="bg-white text-primary font-semibold px-4 py-1 rounded hover:bg-gray-200 transition">
+        Cerrar sesión
+      </button>
+      <button id="btnCreateUser" onclick="openUserModal()"
+        class="hidden bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mb-4">
+        ➕ Crear Usuario
+      </button>
+    </div>
+
   </nav>
 
 

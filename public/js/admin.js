@@ -289,5 +289,9 @@ window.onload = () => {
         document.getElementById("adminSection").classList.remove("hidden");
     }
 
+    if (USER_ROLE === "admin") {
+        document.getElementById("btnCreateUser").classList.remove("hidden");
+    }
+
     loadProducts();
 };
