@@ -81,8 +81,8 @@
         class="border p-3 rounded w-full" required/>
       <input id="categoria" type="text" placeholder="Categoria del producto"
         class="border p-3 rounded w-full" required/>
-        <input id="descripcion" type="textarea" placeholder="descripcion del producto"
-        class="border p-3 rounded w-full" required/>
+        <textarea id="descripcion" placeholder="descripcion del producto"
+        class="border p-3 rounded w-full" required></textarea>
       <input id="precio" type="number" placeholder="Precio"
         class="border p-3 rounded w-full" required/>
          <input id="stock" type="number" placeholder="Stock"
@@ -109,7 +109,7 @@
   </div>
     </div>
 <script>
-const API = "https://proyecto-final-jms.vercel.app";
+  const API = "https://proyecto-final-jms.vercel.app";
 
 let TOKEN = null;
 let USER_ROLE = null;
@@ -132,18 +132,30 @@ async function login() {
   if (res.ok) {
     TOKEN = data.token;
     USER_ROLE = data.user.role;
+
+    // Guardar en localStorage
     localStorage.setItem("token", TOKEN);
     localStorage.setItem("role", USER_ROLE);
 
+    // Guardar tiempo del login
+    localStorage.setItem("loginTime", Date.now());
+    localStorage.setItem("sessionDuration", 30 * 60 * 1000); // 30 min
+
     document.getElementById("loginModal").classList.add("hidden");
 
-    // mostrar panel admin solo si es admin
     if (USER_ROLE === "admin") {
       document.getElementById("adminSection").classList.remove("hidden");
     }
 
+    loadProducts();
+  } else {
+    document.getElementById("loginStatus").innerText = data.message;
   }
 }
+
+// ---------------------------
+// EDITAR PRODUCTO
+// ---------------------------
 function openEditModal(id) {
   const product = window.cachedProducts.find(p => p.id === id);
 
@@ -188,7 +200,6 @@ async function saveProductChanges() {
   loadProducts();
 }
 
-
 // ---------------------------
 // LISTAR PRODUCTOS
 // ---------------------------
@@ -198,40 +209,41 @@ async function loadProducts() {
   });
 
   const products = await res.json();
+  window.cachedProducts = products;
 
   const container = document.getElementById("products");
   container.innerHTML = "";
 
   products.forEach((p) => {
     container.innerHTML += `
-    <div class="border p-4 rounded shadow-sm flex justify-between items-center">
-      <div>
-        <p class="font-bold">${p.nombre}</p>
-        <p class="text-gray-600">$${p.precio}</p>
-        <p class="text-gray-600">${p.descripcion}</p>
-        <p class="text-gray-600">Categoria: ${p.categoria}</p>
-        <p class="text-gray-600">Stock ${p.stock}</p>
+      <div class="border p-4 rounded shadow-sm flex justify-between items-center">
+        <div>
+          <p class="font-bold">${p.nombre}</p>
+          <p class="text-gray-600">$${p.precio}</p>
+          <p class="text-gray-600">${p.descripcion}</p>
+          <p class="text-gray-600">Categoría: ${p.categoria}</p>
+          <p class="text-gray-600">Stock: ${p.stock}</p>
+        </div>
+
+        ${
+          USER_ROLE === "admin"
+            ? `
+            <div class="flex gap-2">
+              <button onclick="openEditModal('${p.id}')"
+                  class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-600">
+                  Editar
+              </button>
+
+              <button onclick="deleteProduct('${p.id}')"
+                class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                Eliminar
+              </button>
+            </div>
+            `
+            : ""
+        }
       </div>
-
-      ${
-        USER_ROLE === "admin"
-          ? `
-          <div class="flex gap-2">
-            <button onclick="openEditModal('${p.id}')"
-                class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-600">
-                Editar
-            </button>
-
-            <button onclick="deleteProduct('${p.id}')"
-              class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
-              Eliminar
-            </button>
-          </div>
-          `
-          : ""
-      }
-    </div>
-  `;
+    `;
   });
 }
 
@@ -261,6 +273,7 @@ function clearProductForm() {
 
 async function createProduct() {
   if(!validateProductForm())return;
+
   const res = await fetch(`${API}/api/products/create`, {
     method: "POST",
     headers: {
@@ -278,6 +291,7 @@ async function createProduct() {
 
   const data = await res.json();
   alert(data.message ?? "Producto creado");
+
   clearProductForm(); 
   loadProducts();
 }
@@ -299,24 +313,31 @@ async function deleteProduct(id) {
   loadProducts();
 }
 
+// ---------------------------
+// SESIÓN / LOGIN MODAL
+// ---------------------------
+function checkSession() {
+  const loginTime = localStorage.getItem("loginTime");
+  const duration = localStorage.getItem("sessionDuration");
+
+  if (!loginTime) return false;
+
+  const expireAt = Number(loginTime) + Number(duration);
+
+  return Date.now() < expireAt;
+}
+
 window.onload = () => {
   const savedToken = localStorage.getItem("token");
   const savedRole = localStorage.getItem("role");
 
-  // Si hay sesión guardada pero expiró → cerrar sesión
-  if (!checkSession()) {
+  // Si no hay sesión o expiró → abrir modal
+  if (!savedToken || !checkSession()) {
     localStorage.clear();
     document.getElementById("loginModal").classList.remove("hidden");
     return;
   }
 
-  // Si no hay token → mostrar modal
-  if (!savedToken) {
-    document.getElementById("loginModal").classList.remove("hidden");
-    return;
-  }
-
-  // Si hay token y está vigente
   TOKEN = savedToken;
   USER_ROLE = savedRole;
 
@@ -328,24 +349,6 @@ window.onload = () => {
 
   loadProducts();
 };
-localStorage.setItem("loginTime", Date.now());
-localStorage.setItem("sessionDuration", 30 * 60 * 1000); // 30 min
-function checkSession() {
-  const loginTime = localStorage.getItem("loginTime");
-  const duration = localStorage.getItem("sessionDuration");
-
-  if (!loginTime) return false;
-
-  const expireAt = Number(loginTime) + Number(duration);
-
-  if (Date.now() > expireAt) {
-    // Expiró
-    localStorage.clear();
-    return false;
-  }
-
-  return true;
-}
 
 </script>
 </body>
