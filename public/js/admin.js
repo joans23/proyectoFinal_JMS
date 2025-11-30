@@ -82,6 +82,7 @@ async function login() {
 
         if (USER_ROLE === "admin") {
             document.getElementById("adminSection").classList.remove("hidden");
+            document.getElementById("btnCreateUser").classList.remove("hidden");
         }
 
         loadProducts();
