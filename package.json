@@ -1,10 +1,21 @@
 {
-  "type":"module",
+  "type": "module",
   "name": "proyectofinal",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node index.js",
+    "createUserDemo": "node ./scripts/createUser.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "firebase": "^11.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "serverless-http": "^4.0.0"
   },
   "keywords": [],
   "author": "",
