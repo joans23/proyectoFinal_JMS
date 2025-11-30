@@ -50,8 +50,12 @@
   </div>
 
 </div>
-    <nav class="bg-primary text-white p-4 shadow-md">
+    <nav class="bg-primary text-white p-4 shadow-md flex justify-between items-center">
         <h1 class="text-xl font-bold">Panel de Administración</h1>
+        <button onclick="logout()" id="logoutBtn"
+        class="bg-white text-primary font-semibold px-4 py-1 rounded hover:bg-gray-200 transition">
+        Cerrar sesión
+    </button>
     </nav>
     <!-- MODAL LOGIN -->
 <div id="loginModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
@@ -327,7 +331,13 @@ function checkSession() {
   return Date.now() < expireAt;
 }
 
+function logout() {
+    localStorage.clear();
+    location.reload();  
+}
+
 window.onload = () => {
+  document.getElementById("logoutBtn").classList.remove("hidden");
   const savedToken = localStorage.getItem("token");
   const savedRole = localStorage.getItem("role");
 
