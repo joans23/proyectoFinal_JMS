@@ -126,8 +126,11 @@ async function loadProducts() {
     container.innerHTML += `
       <div class="border p-4 rounded shadow-sm flex justify-between items-center">
         <div>
-          <p class="font-bold">${p.name}</p>
-          <p class="text-gray-600">$${p.price}</p>
+          <p class="font-bold">${p.nombre}</p>
+          <p class="text-gray-600">$${p.precio}</p>
+          <p class="text-gray-600">${p.descripcion}</p>
+          <p class="text-gray-600">Categoria: ${p.categoria}</p>
+          <p class="text-gray-600">Stock ${p.stock}</p>
         </div>
 
         ${
