@@ -22,10 +22,10 @@
     <nav class="bg-primary text-white p-4 shadow-md">
         <h1 class="text-xl font-bold">Panel de Administración</h1>
     </nav>
-    <div class="max-w-4xl mx-auto mt-8">
-        <!-- LOGIN CARD -->
-  <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-    <h2 class="text-2xl font-bold mb-4">🔐 Iniciar sesión</h2>
+    <!-- MODAL LOGIN -->
+<div id="loginModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4 text-center">🔐 Iniciar sesión</h2>
 
     <div class="flex flex-col gap-4">
       <input id="username" type="text" placeholder="Usuario"
@@ -36,20 +36,26 @@
         class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
         Entrar
       </button>
-
       <p id="loginStatus" class="text-sm mt-2 text-red-600"></p>
     </div>
   </div>
+</div>
 
   <!-- CREATE PRODUCT -->
   <div id="adminSection" class="hidden bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-2xl font-bold mb-4">➕ Crear Producto</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input id="name" type="text" placeholder="Nombre del producto"
-        class="border p-3 rounded w-full" />
-      <input id="price" type="number" placeholder="Precio"
-        class="border p-3 rounded w-full" />
+      <input id="nombre" type="text" placeholder="Nombre del producto"
+        class="border p-3 rounded w-full" required/>
+      <input id="categoria" type="text" placeholder="Categoria del producto"
+        class="border p-3 rounded w-full" required/>
+        <input id="descripcion" type="textarea" placeholder="descripcion del producto"
+        class="border p-3 rounded w-full" required/>
+      <input id="precio" type="number" placeholder="Precio"
+        class="border p-3 rounded w-full" required/>
+         <input id="stock" type="number" placeholder="Stock"
+        class="border p-3 rounded w-full" required/>
     </div>
 
     <button onclick="createProduct()"
@@ -95,17 +101,16 @@ async function login() {
   if (res.ok) {
     TOKEN = data.token;
     USER_ROLE = data.user.role;
+    localStorage.setItem("token", TOKEN);
+    localStorage.setItem("role", USER_ROLE);
 
-    document.getElementById("loginStatus").textContent =
-      "✔ Login exitoso (" + USER_ROLE + ")";
+    document.getElementById("loginModal").classList.add("hidden");
 
     // mostrar panel admin solo si es admin
     if (USER_ROLE === "admin") {
       document.getElementById("adminSection").classList.remove("hidden");
     }
 
-  } else {
-    document.getElementById("loginStatus").textContent = "❌ " + data.message;
   }
 }
 
@@ -149,7 +154,21 @@ async function loadProducts() {
 // ---------------------------
 // CREAR PRODUCTO
 // ---------------------------
+function validateProductForm(){
+  const required = ["nombre","precio","stock","categoria","descripcion"];
+
+  for (let id of required){
+    const value = document.getElementById(id).value.trim();
+    if(!value){
+      alert("Todos los campos son obligatorios");
+      return false;
+    }
+  }
+  return true;
+}
+
 async function createProduct() {
+  if(!validateProductForm())return;
   const res = await fetch(`${API}/api/products/create`, {
     method: "POST",
     headers: {
@@ -157,8 +176,11 @@ async function createProduct() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      name: document.getElementById("name").value,
-      price: Number(document.getElementById("price").value)
+      nombre: document.getElementById("nombre").value,
+      categoria: document.getElementById("categoria").value,
+      descripcion: document.getElementById("descripcion").value,
+      stock: Number(document.getElementById("stock").value),
+      precio: Number(document.getElementById("precio").value)
     })
   });
 
@@ -184,6 +206,57 @@ async function deleteProduct(id) {
 
   loadProducts();
 }
+
+window.onload = () => {
+  const savedToken = localStorage.getItem("token");
+  const savedRole = localStorage.getItem("role");
+
+  if (savedToken) {
+    TOKEN = savedToken;
+    USER_ROLE = savedRole;
+
+    // Ocultar modal
+    document.getElementById("loginModal").classList.add("hidden");
+
+    if (USER_ROLE === "admin") {
+      document.getElementById("adminSection").classList.remove("hidden");
+    }
+
+    loadProducts(); // cargar productos automáticamente
+  }
+};
+localStorage.setItem("loginTime", Date.now());
+localStorage.setItem("sessionDuration", 30 * 60 * 1000); // 30 min
+function checkSession() {
+  const loginTime = localStorage.getItem("loginTime");
+  const duration = localStorage.getItem("sessionDuration");
+
+  if (!loginTime) return false;
+
+  const expireAt = Number(loginTime) + Number(duration);
+
+  if (Date.now() > expireAt) {
+    // Expiró
+    localStorage.clear();
+    return false;
+  }
+
+  return true;
+}
+
+window.onload = () => {
+  if (checkSession()) {
+    TOKEN = localStorage.getItem("token");
+    USER_ROLE = localStorage.getItem("role");
+    document.getElementById("loginModal").classList.add("hidden");
+
+    if (USER_ROLE === "admin") {
+      document.getElementById("adminSection").classList.remove("hidden");
+    }
+
+    loadProducts();
+  }
+};
 </script>
 </body>
 </html>
