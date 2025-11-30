@@ -17,6 +17,9 @@
     "firebase": "^11.10.0",
     "jsonwebtoken": "^9.0.2"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
