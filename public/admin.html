@@ -1,100 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Productos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config= {
-        theme: {
-            extend: {
-                colors:{
-                    primary: "#2563eb",
-                    secondary:"#f3f4f6"
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - Productos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#2563eb",
+            secondary: "#f3f4f6"
+          }
         }
+      }
     };
-</script>
+  </script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
-  <!-- MODAL EDITAR PRODUCTO -->
-<div id="editModal"
-    class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-
-  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
-    <h2 class="text-2xl font-bold mb-4 text-center">✏️ Editar Producto</h2>
-
-    <input type="hidden" id="edit-id" />
-
-    <div class="grid grid-cols-1 gap-4 mb-4">
-      <input id="edit-nombre" class="border p-3 rounded" placeholder="Nombre" />
-      <input id="edit-categoria" class="border p-3 rounded" placeholder="Categoría" />
-      <input id="edit-descripcion" class="border p-3 rounded" placeholder="Descripción" />
-      <input id="edit-precio" class="border p-3 rounded" placeholder="Precio" type="number" />
-      <input id="edit-stock" class="border p-3 rounded" placeholder="Stock" type="number" />
-    </div>
-
-    <div class="flex justify-end gap-2">
-      <button onclick="closeEditModal()"
-        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-        Cancelar
-      </button>
-
-      <button onclick="saveProductChanges()"
-        class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-700">
-        Guardar cambios
-      </button>
-    </div>
-  </div>
-
-</div>
-    <nav class="bg-primary text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold">Panel de Administración</h1>
-        <button onclick="logout()" id="logoutBtn"
-        class="bg-white text-primary font-semibold px-4 py-1 rounded hover:bg-gray-200 transition">
-        Cerrar sesión
+  <nav class="bg-primary text-white p-4 shadow-md flex justify-between items-center">
+    <h1 class="text-xl font-bold">Panel de Administración</h1>
+    <button onclick="logout()" id="logoutBtn"
+      class="bg-white text-primary font-semibold px-4 py-1 rounded hover:bg-gray-200 transition">
+      Cerrar sesión
     </button>
-    </nav>
-    <!-- MODAL LOGIN -->
-<div id="loginModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-  <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-4 text-center">🔐 Iniciar sesión</h2>
+    <button id="btnCreateUser" onclick="openUserModal()"
+      class="hidden bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 mb-4">
+      ➕ Crear Usuario
+    </button>
+  </nav>
 
-    <div class="flex flex-col gap-4">
-      <input id="username" type="text" placeholder="Usuario"
-        class="border p-3 rounded w-full" />
-      <input id="password" type="password" placeholder="Contraseña"
-        class="border p-3 rounded w-full" />
-      <button onclick="login()"
-        class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
-        Entrar
-      </button>
-      <p id="loginStatus" class="text-sm mt-2 text-red-600"></p>
-    </div>
-  </div>
-</div>
 
   <!-- CREATE PRODUCT -->
   <div id="adminSection" class="hidden bg-white p-6 rounded-lg shadow-md mb-8">
     <h2 class="text-2xl font-bold mb-4">➕ Crear Producto</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input id="nombre" type="text" placeholder="Nombre del producto"
-        class="border p-3 rounded w-full" required/>
-      <input id="categoria" type="text" placeholder="Categoria del producto"
-        class="border p-3 rounded w-full" required/>
-        <textarea id="descripcion" placeholder="descripcion del producto"
-        class="border p-3 rounded w-full" required></textarea>
-      <input id="precio" type="number" placeholder="Precio"
-        class="border p-3 rounded w-full" required/>
-         <input id="stock" type="number" placeholder="Stock"
-        class="border p-3 rounded w-full" required/>
+      <input id="nombre" type="text" placeholder="Nombre del producto" class="border p-3 rounded w-full" required />
+      <input id="categoria" type="text" placeholder="Categoria del producto" class="border p-3 rounded w-full"
+        required />
+      <textarea id="descripcion" placeholder="descripcion del producto" class="border p-3 rounded w-full"
+        required></textarea>
+      <input id="precio" type="number" placeholder="Precio" class="border p-3 rounded w-full" required />
+      <input id="stock" type="number" placeholder="Stock" class="border p-3 rounded w-full" required />
     </div>
 
-    <button onclick="createProduct()"
-      class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+    <button onclick="createProduct()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
       Crear producto
     </button>
   </div>
@@ -103,263 +57,89 @@
   <div class="bg-white p-6 rounded-lg shadow-md">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">📦 Productos</h2>
-      <button onclick="loadProducts()"
-        class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+      <button onclick="loadProducts()" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
         Cargar productos
       </button>
     </div>
 
     <div id="products" class="flex flex-col gap-4"></div>
   </div>
-    </div>
-<script>
-  const API = "https://proyecto-final-jms.vercel.app";
+  </div>
+  <!-- MODAL CREAR USUARIO -->
+  <div id="userModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
-let TOKEN = null;
-let USER_ROLE = null;
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-4 text-center">👤 Crear Usuario</h2>
 
-// ---------------------------
-// LOGIN
-// ---------------------------
-async function login() {
-  const res = await fetch(`${API}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: document.getElementById("username").value,
-      password: document.getElementById("password").value
-    })
-  });
+      <div class="flex flex-col gap-4">
+        <input id="new-username" type="text" placeholder="Nombre de usuario" class="border p-3 rounded w-full" />
 
-  const data = await res.json();
+        <input id="new-password" type="password" placeholder="Contraseña" class="border p-3 rounded w-full" />
 
-  if (res.ok) {
-    TOKEN = data.token;
-    USER_ROLE = data.user.role;
+        <select id="new-role" class="border p-3 rounded w-full">
+          <option value="user">Usuario</option>
+          <option value="admin">Administrador</option>
+        </select>
 
-    // Guardar en localStorage
-    localStorage.setItem("token", TOKEN);
-    localStorage.setItem("role", USER_ROLE);
+        <p id="userStatus" class="text-sm text-red-600"></p>
 
-    // Guardar tiempo del login
-    localStorage.setItem("loginTime", Date.now());
-    localStorage.setItem("sessionDuration", 30 * 60 * 1000); // 30 min
+        <div class="flex justify-end gap-2 mt-4">
+          <button onclick="closeUserModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+            Cancelar
+          </button>
 
-    document.getElementById("loginModal").classList.add("hidden");
-
-    if (USER_ROLE === "admin") {
-      document.getElementById("adminSection").classList.remove("hidden");
-    }
-
-    loadProducts();
-  } else {
-    document.getElementById("loginStatus").innerText = data.message;
-  }
-}
-
-// ---------------------------
-// EDITAR PRODUCTO
-// ---------------------------
-function openEditModal(id) {
-  const product = window.cachedProducts.find(p => p.id === id);
-
-  document.getElementById("edit-id").value = id;
-  document.getElementById("edit-nombre").value = product.nombre;
-  document.getElementById("edit-categoria").value = product.categoria;
-  document.getElementById("edit-descripcion").value = product.descripcion;
-  document.getElementById("edit-precio").value = product.precio;
-  document.getElementById("edit-stock").value = product.stock;
-
-  document.getElementById("editModal").classList.remove("hidden");
-}
-
-function closeEditModal() {
-  document.getElementById("editModal").classList.add("hidden");
-}
-
-async function saveProductChanges() {
-  const id = document.getElementById("edit-id").value;
-
-  const updatedFields = {
-    nombre: document.getElementById("edit-nombre").value,
-    categoria: document.getElementById("edit-categoria").value,
-    descripcion: document.getElementById("edit-descripcion").value,
-    precio: Number(document.getElementById("edit-precio").value),
-    stock: Number(document.getElementById("edit-stock").value)
-  };
-
-  const res = await fetch(`${API}/api/products/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: TOKEN,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(updatedFields)
-  });
-
-  const data = await res.json();
-  alert(data.message ?? "Producto actualizado");
-
-  closeEditModal();
-  loadProducts();
-}
-
-// ---------------------------
-// LISTAR PRODUCTOS
-// ---------------------------
-async function loadProducts() {
-  const res = await fetch(`${API}/api/products`, {
-    headers: { Authorization: TOKEN }
-  });
-
-  const products = await res.json();
-  window.cachedProducts = products;
-
-  const container = document.getElementById("products");
-  container.innerHTML = "";
-
-  products.forEach((p) => {
-    container.innerHTML += `
-      <div class="border p-4 rounded shadow-sm flex justify-between items-center">
-        <div>
-          <p class="font-bold">${p.nombre}</p>
-          <p class="text-gray-600">$${p.precio}</p>
-          <p class="text-gray-600">${p.descripcion}</p>
-          <p class="text-gray-600">Categoría: ${p.categoria}</p>
-          <p class="text-gray-600">Stock: ${p.stock}</p>
+          <button onclick="createUser()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+            Crear Usuario
+          </button>
         </div>
-
-        ${
-          USER_ROLE === "admin"
-            ? `
-            <div class="flex gap-2">
-              <button onclick="openEditModal('${p.id}')"
-                  class="bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-600">
-                  Editar
-              </button>
-
-              <button onclick="deleteProduct('${p.id}')"
-                class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
-                Eliminar
-              </button>
-            </div>
-            `
-            : ""
-        }
       </div>
-    `;
-  });
-}
+    </div>
 
-// ---------------------------
-// CREAR PRODUCTO
-// ---------------------------
-function validateProductForm(){
-  const required = ["nombre","precio","stock","categoria","descripcion"];
+  </div>
+  <!-- MODAL LOGIN -->
+  <div id="loginModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-4 text-center">🔐 Iniciar sesión</h2>
 
-  for (let id of required){
-    const value = document.getElementById(id).value.trim();
-    if(!value){
-      alert("Todos los campos son obligatorios");
-      return false;
-    }
-  }
-  return true;
-}
+      <div class="flex flex-col gap-4">
+        <input id="username" type="text" placeholder="Usuario" class="border p-3 rounded w-full" />
+        <input id="password" type="password" placeholder="Contraseña" class="border p-3 rounded w-full" />
+        <button onclick="login()" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+          Entrar
+        </button>
+        <p id="loginStatus" class="text-sm mt-2 text-red-600"></p>
+      </div>
+    </div>
+  </div>
+  <!-- MODAL EDITAR PRODUCTO -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
 
-function clearProductForm() {
-  document.getElementById("nombre").value = "";
-  document.getElementById("categoria").value = "";
-  document.getElementById("descripcion").value = "";
-  document.getElementById("precio").value = "";
-  document.getElementById("stock").value = "";
-}
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+      <h2 class="text-2xl font-bold mb-4 text-center">✏️ Editar Producto</h2>
 
-async function createProduct() {
-  if(!validateProductForm())return;
+      <input type="hidden" id="edit-id" />
 
-  const res = await fetch(`${API}/api/products/create`, {
-    method: "POST",
-    headers: {
-      Authorization: TOKEN,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      nombre: document.getElementById("nombre").value,
-      categoria: document.getElementById("categoria").value,
-      descripcion: document.getElementById("descripcion").value,
-      stock: Number(document.getElementById("stock").value),
-      precio: Number(document.getElementById("precio").value)
-    })
-  });
+      <div class="grid grid-cols-1 gap-4 mb-4">
+        <input id="edit-nombre" class="border p-3 rounded" placeholder="Nombre" />
+        <input id="edit-categoria" class="border p-3 rounded" placeholder="Categoría" />
+        <input id="edit-descripcion" class="border p-3 rounded" placeholder="Descripción" />
+        <input id="edit-precio" class="border p-3 rounded" placeholder="Precio" type="number" />
+        <input id="edit-stock" class="border p-3 rounded" placeholder="Stock" type="number" />
+      </div>
 
-  const data = await res.json();
-  alert(data.message ?? "Producto creado");
+      <div class="flex justify-end gap-2">
+        <button onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+          Cancelar
+        </button>
 
-  clearProductForm(); 
-  loadProducts();
-}
+        <button onclick="saveProductChanges()" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-700">
+          Guardar cambios
+        </button>
+      </div>
+    </div>
 
-// ---------------------------
-// ELIMINAR PRODUCTO
-// ---------------------------
-async function deleteProduct(id) {
-  if (!confirm("¿Eliminar producto?")) return;
-
-  const res = await fetch(`${API}/api/products/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: TOKEN }
-  });
-
-  const data = await res.json();
-  alert(data.message);
-
-  loadProducts();
-}
-
-// ---------------------------
-// SESIÓN / LOGIN MODAL
-// ---------------------------
-function checkSession() {
-  const loginTime = localStorage.getItem("loginTime");
-  const duration = localStorage.getItem("sessionDuration");
-
-  if (!loginTime) return false;
-
-  const expireAt = Number(loginTime) + Number(duration);
-
-  return Date.now() < expireAt;
-}
-
-function logout() {
-    localStorage.clear();
-    location.reload();  
-}
-
-window.onload = () => {
-  document.getElementById("logoutBtn").classList.remove("hidden");
-  const savedToken = localStorage.getItem("token");
-  const savedRole = localStorage.getItem("role");
-
-  // Si no hay sesión o expiró → abrir modal
-  if (!savedToken || !checkSession()) {
-    localStorage.clear();
-    document.getElementById("loginModal").classList.remove("hidden");
-    return;
-  }
-
-  TOKEN = savedToken;
-  USER_ROLE = savedRole;
-
-  document.getElementById("loginModal").classList.add("hidden");
-
-  if (USER_ROLE === "admin") {
-    document.getElementById("adminSection").classList.remove("hidden");
-  }
-
-  loadProducts();
-};
-
-</script>
+  </div>
+  <script src="./js/admin.js"></script>
 </body>
+
 </html>
