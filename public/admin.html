@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Productos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config= {
+        theme: {
+            extend: {
+                colors:{
+                    primary: "#2563eb",
+                    secondary:"#f3f4f6"
+                }
+            }
+        }
+    };
+</script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-primary text-white p-4 shadow-md">
+        <h1 class="text-xl font-bold">Panel de Administración</h1>
+    </nav>
+    <div class="max-w-4xl mx-auto mt-8">
+        <!-- LOGIN CARD -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+    <h2 class="text-2xl font-bold mb-4">🔐 Iniciar sesión</h2>
+
+    <div class="flex flex-col gap-4">
+      <input id="username" type="text" placeholder="Usuario"
+        class="border p-3 rounded w-full" />
+      <input id="password" type="password" placeholder="Contraseña"
+        class="border p-3 rounded w-full" />
+      <button onclick="login()"
+        class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+        Entrar
+      </button>
+
+      <p id="loginStatus" class="text-sm mt-2 text-red-600"></p>
+    </div>
+  </div>
+
+  <!-- CREATE PRODUCT -->
+  <div id="adminSection" class="hidden bg-white p-6 rounded-lg shadow-md mb-8">
+    <h2 class="text-2xl font-bold mb-4">➕ Crear Producto</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input id="name" type="text" placeholder="Nombre del producto"
+        class="border p-3 rounded w-full" />
+      <input id="price" type="number" placeholder="Precio"
+        class="border p-3 rounded w-full" />
+    </div>
+
+    <button onclick="createProduct()"
+      class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      Crear producto
+    </button>
+  </div>
+
+  <!-- PRODUCT LIST -->
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">📦 Productos</h2>
+      <button onclick="loadProducts()"
+        class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700">
+        Cargar productos
+      </button>
+    </div>
+
+    <div id="products" class="flex flex-col gap-4"></div>
+  </div>
+    </div>
+<script>
+const API = "https://proyecto-final-jms.vercel.app";
+
+let TOKEN = null;
+let USER_ROLE = null;
+
+// ---------------------------
+// LOGIN
+// ---------------------------
+async function login() {
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: document.getElementById("username").value,
+      password: document.getElementById("password").value
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    TOKEN = data.token;
+    USER_ROLE = data.user.role;
+
+    document.getElementById("loginStatus").textContent =
+      "✔ Login exitoso (" + USER_ROLE + ")";
+
+    // mostrar panel admin solo si es admin
+    if (USER_ROLE === "admin") {
+      document.getElementById("adminSection").classList.remove("hidden");
+    }
+
+  } else {
+    document.getElementById("loginStatus").textContent = "❌ " + data.message;
+  }
+}
+
+// ---------------------------
+// LISTAR PRODUCTOS
+// ---------------------------
+async function loadProducts() {
+  const res = await fetch(`${API}/api/products`, {
+    headers: { Authorization: TOKEN }
+  });
+
+  const products = await res.json();
+
+  const container = document.getElementById("products");
+  container.innerHTML = "";
+
+  products.forEach((p) => {
+    container.innerHTML += `
+      <div class="border p-4 rounded shadow-sm flex justify-between items-center">
+        <div>
+          <p class="font-bold">${p.name}</p>
+          <p class="text-gray-600">$${p.price}</p>
+        </div>
+
+        ${
+          USER_ROLE === "admin"
+            ? `<button onclick="deleteProduct('${p.id}')"
+                class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                Eliminar
+               </button>`
+            : ""
+        }
+      </div>
+    `;
+  });
+}
+
+// ---------------------------
+// CREAR PRODUCTO
+// ---------------------------
+async function createProduct() {
+  const res = await fetch(`${API}/api/products/create`, {
+    method: "POST",
+    headers: {
+      Authorization: TOKEN,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      price: Number(document.getElementById("price").value)
+    })
+  });
+
+  const data = await res.json();
+  alert(data.message ?? "Producto creado");
+
+  loadProducts();
+}
+
+// ---------------------------
+// ELIMINAR PRODUCTO
+// ---------------------------
+async function deleteProduct(id) {
+  if (!confirm("¿Eliminar producto?")) return;
+
+  const res = await fetch(`${API}/api/products/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: TOKEN }
+  });
+
+  const data = await res.json();
+  alert(data.message);
+
+  loadProducts();
+}
+</script>
+</body>
+</html>
