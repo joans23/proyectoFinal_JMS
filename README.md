@@ -38,37 +38,39 @@ Deploy productivo en Vercel:\
 # 📁 Estructura del proyecto
 
 /
-│
-├── api/                       ← backend (serverless Express + Firebase)
-│   └── index.js               ← punto de entrada (handler serverless)
+├── api/                     # backend (serverless Express + Firebase)
+│   └── index.js             # punto de entrada (handler serverless)
 │
 ├── routes/
 │   ├── auth.routes.js
 │   └── products.routes.js
 │
-├── controllers/           ← lógica de control de peticiones
+├── controllers/             # lógica de control de peticiones
 │   ├── auth.controller.js
 │   └── products.controller.js
 │
-├── services/              ← lógica de negocio / lógica de acceso a datos
+├── services/                # lógica de negocio / acceso a datos
 │   ├── products.service.js
 │   └── auth.service.js
-├── models/                ← definiciones / wrappers de Firestore / estructura de datos
+│
+├── models/                  # modelos Firestore
 │   ├── product.model.js
 │   └── user.model.js
-├── middlewares/           ← middlewares (auth, roles, errores, etc.)
+│
+├── middlewares/             # autenticación / roles / validaciones
 │   ├── auth.middleware.js
-│   └── roles.middleware.js   ← admin / user
+│   └── roles.middleware.js
 │
-├── public/                    ← frontend estático: panel admin + assets
-│   ├── admin.html             ← panel de administración (HTML)
+├── public/                  # frontend estático (panel admin)
+│   ├── admin.html
 │   └── js/
-│        └── admin.js          ← lógica JS del panel (login, fetch, UI, etc.)
+│       └── admin.js
 │
-├── .env                       ← variables de entorno (JWT_SECRET, Firebase config, etc.)
-├── package.json               ← dependencias del proyecto + “type”: "module"
-├── vercel.json                ← configuración de rutas/ functions para deploy en Vercel
-└── README.md                  ← documentación del proyecto
+├── .env                     # variables de entorno (NO se sube al repo)
+├── package.json             # dependencias y configuración
+├── vercel.json              # configuración del deploy en Vercel
+└── README.md                # documentación del proyecto
+
 
 ------------------------------------------------------------------------
 
