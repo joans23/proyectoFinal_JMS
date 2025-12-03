@@ -16,44 +16,59 @@ Deploy productivo en Vercel:\
 
 ### **Backend**
 
--   Node.js\
--   Express\
--   Firebase Firestore\
--   JSON Web Tokens (JWT)\
--   CORS\
--   dotenv\
+-   Node.js
+-   Express
+-   Firebase Firestore
+-   JSON Web Tokens (JWT)
+-   CORS
+-   dotenv
 -   Vercel Serverless Functions
 
 ### **Frontend (Panel Admin)**
 
--   HTML\
--   TailwindCSS\
--   JavaScript vanilla\
--   Fetch API\
--   Modales con backdrop blur\
+-   HTML
+-   TailwindCSS
+-   JavaScript vanilla
+-   Fetch API
+-   Modales con backdrop blur
 -   Manejo de sesión con localStorage
 
 ------------------------------------------------------------------------
 
 # 📁 Estructura del proyecto
 
-    /
-    ├── api/
-    │   ├── index.js              → servidor Express (serverless)
-    │   ├── routes/
-    │   │     ├── auth.routes.js
-    │   │     └── products.routes.js
-    │   ├── controllers/
-    │   ├── services/
-    │   ├── models/
-    │   └── middlewares/
-    │
-    ├── public/
-    │   ├── admin.html            → panel administrador
-    │   └── js/
-    │        └── admin.js         → lógica del panel
-    │
-    └── vercel.json               → configuración de Vercel
+  proyecto-final-jms/
+│
+├── api/                       ← backend (serverless Express + Firebase)
+│   └── index.js               ← punto de entrada (handler serverless)
+│
+├── routes/
+│   ├── auth.routes.js
+│   └── products.routes.js
+│   
+├── controllers/           ← lógica de control de peticiones
+│   ├── auth.controller.js
+│   └── products.controller.js
+│ 
+├── services/              ← lógica de negocio / lógica de acceso a datos
+│   ├── products.service.js
+│   └── auth.service.js
+├── models/                ← definiciones / wrappers de Firestore / estructura de datos
+│   ├── product.model.js
+│   └── user.model.js
+├── middlewares/           ← middlewares (auth, roles, errores, etc.)
+│   ├── auth.middleware.js
+│   └── roles.middleware.js   ← admin / user
+│
+├── public/                    ← frontend estático: panel admin + assets
+│   ├── admin.html             ← panel de administración (HTML)
+│   └── js/                    
+│        └── admin.js          ← lógica JS del panel (login, fetch, UI, etc.)
+│   
+├── .env                       ← variables de entorno (JWT_SECRET, Firebase config, etc.)
+├── package.json               ← dependencias del proyecto + “type”: "module"
+├── vercel.json                ← configuración de rutas/ functions para deploy en Vercel
+└── README.md                  ← documentación del proyecto
 
 ------------------------------------------------------------------------
 
