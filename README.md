@@ -36,7 +36,7 @@ Deploy productivo en Vercel:\
 ------------------------------------------------------------------------
 
 # 📁 Estructura del proyecto
-
+```
 /
 ├── api/                     # backend (serverless Express + Firebase)
 │   └── index.js             # punto de entrada (handler serverless)
@@ -70,7 +70,7 @@ Deploy productivo en Vercel:\
 ├── package.json             # dependencias y configuración
 ├── vercel.json              # configuración del deploy en Vercel
 └── README.md                # documentación del proyecto
-
+```
 
 ------------------------------------------------------------------------
 
