@@ -45,11 +45,11 @@ Deploy productivo en Vercel:\
 ├── routes/
 │   ├── auth.routes.js
 │   └── products.routes.js
-│   
+│
 ├── controllers/           ← lógica de control de peticiones
 │   ├── auth.controller.js
 │   └── products.controller.js
-│ 
+│
 ├── services/              ← lógica de negocio / lógica de acceso a datos
 │   ├── products.service.js
 │   └── auth.service.js
@@ -62,9 +62,9 @@ Deploy productivo en Vercel:\
 │
 ├── public/                    ← frontend estático: panel admin + assets
 │   ├── admin.html             ← panel de administración (HTML)
-│   └── js/                    
+│   └── js/
 │        └── admin.js          ← lógica JS del panel (login, fetch, UI, etc.)
-│   
+│
 ├── .env                       ← variables de entorno (JWT_SECRET, Firebase config, etc.)
 ├── package.json               ← dependencias del proyecto + “type”: "module"
 ├── vercel.json                ← configuración de rutas/ functions para deploy en Vercel
