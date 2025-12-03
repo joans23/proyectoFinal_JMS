@@ -37,7 +37,7 @@ Deploy productivo en Vercel:\
 
 # 📁 Estructura del proyecto
 
-  proyecto-final-jms/
+/
 │
 ├── api/                       ← backend (serverless Express + Firebase)
 │   └── index.js               ← punto de entrada (handler serverless)
