@@ -66,7 +66,7 @@ Deploy productivo en Vercel:\
 │   └── js/
 │       └── admin.js
 │
-├── .env                     # variables de entorno (NO se sube al repo)
+├── .env.sample              # variables de entorno (archivo de ejemplo)
 ├── package.json             # dependencias y configuración
 ├── vercel.json              # configuración del deploy en Vercel
 └── README.md                # documentación del proyecto
@@ -244,19 +244,7 @@ El JavaScript del panel está en:\
 
 # ☁️ Deploy en Vercel
 
-### 1️⃣ Instalar CLI
-
-``` sh
-npm i -g vercel
-```
-
-### 2️⃣ Deploy
-
-``` sh
-vercel
-```
-
-### 3️⃣ Archivo `vercel.json`
+### Archivo `vercel.json`
 
 ``` json
 {
@@ -275,7 +263,7 @@ vercel
 ------------------------------------------------------------------------
 
 # 🛡️ Manejo de errores
-
+```
   Código    Significado
   --------- ---------------------------------
   **400**   Error de validación
@@ -283,7 +271,7 @@ vercel
   **403**   Sin permisos (rol insuficiente)
   **404**   Ruta no encontrada
   **500**   Error interno o Firebase
-
+```
 ------------------------------------------------------------------------
 
 # 👤 Autor
